@@ -4,6 +4,8 @@ import { DotIcon } from "lucide-react";
 import { ArticlesPagination } from "~/components/common/articles_pagination";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { useState } from "react";
+import { Input } from "../ui/input";
 
 export default function ArticlesSubjects({ activeSubjects, subjects, subjects_code, initialArticles }:
     { activeSubjects: Array<string>, subjects: string[], subjects_code: string[], initialArticles: Array<any> }) {
@@ -18,18 +20,30 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
     }
     const currentPage = page;
 
-    const currentArticles = initialArticles.length !== 0 ? initialArticles.slice(
+    const [searchValue, setSearchValue] = useState("");
+
+    const searchArticles = (searchValue: string) => initialArticles.filter((article) => {
+        return article.title.toLowerCase().includes(searchValue.toLowerCase()) || article.author.toLowerCase().includes(searchValue.toLowerCase());
+    });
+
+    const filteredArticles = searchArticles(searchValue);
+
+    const currentArticles = filteredArticles.length !== 0 ? filteredArticles.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     ) : [];
-    let article_id = initialArticles.length !== 0 ? Number(searchParams.get('article_id')) || Number(currentArticles[0].article_id) : 0;
-    let selectedArticle = initialArticles.length !== 0 ? currentArticles.find(article => Number(article.article_id) === article_id) : [];
+
+    let article_id = filteredArticles.length !== 0 ? Number(searchParams.get('article_id')) || Number(filteredArticles[0].article_id) : 0;
+    let selectedArticle = filteredArticles.length !== 0 ? currentArticles.find((article: { article_id: number }) => Number(article.article_id) === article_id) : [];
 
     return (
         <div className="w-[1370px] gap-4 mx-auto mb-20">
             <div>
                 <div className="overflow-y-auto p-4 mt-12 space-y-4 w-[1400px] mx-auto">
-                    <h2 className="text-2xl font-bold">{activeSubjects[0] !== "" ? `Related Articles (${activeSubjects.length})` : "Please select subjects"}</h2>
+                    <div className="flex flex-row items-center justify-start gap-4">
+                        <h2 className="text-2xl font-bold">{activeSubjects[0] !== "" ? `Related Articles (${activeSubjects.length})` : "Please select subjects"}</h2>
+                        <Input type="text" placeholder="Search articles by title or author" className="w-[300px]" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
+                    </div>
                     {subjects.map((subject: string, index: number) => (
                         activeSubjects.includes(subjects_code[index]) ? (
                             <Badge key={subject} variant="outline" className="cursor-pointer">
