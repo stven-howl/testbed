@@ -17,19 +17,19 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
         page = 1;
     }
     const currentPage = page;
-    const currentArticles = initialArticles.slice(
+
+    const currentArticles = initialArticles.length !== 0 ? initialArticles.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
-    );
-
-    let article_id = Number(searchParams.get('article_id')) || Number(currentArticles[0].article_id);
-    let selectedArticle = currentArticles.find(article => Number(article.article_id) === article_id);
+    ) : [];
+    let article_id = initialArticles.length !== 0 ? Number(searchParams.get('article_id')) || Number(currentArticles[0].article_id) : 0;
+    let selectedArticle = initialArticles.length !== 0 ? currentArticles.find(article => Number(article.article_id) === article_id) : [];
 
     return (
-        <div className="w-[1370px] gap-4 mx-auto">
+        <div className="w-[1370px] gap-4 mx-auto mb-20">
             <div>
                 <div className="overflow-y-auto p-4 mt-12 space-y-4 w-[1400px] mx-auto">
-                    <h2 className="text-2xl font-bold">Related Articles {activeSubjects.length > 0 ? `(${activeSubjects.length})` : ""}</h2>
+                    <h2 className="text-2xl font-bold">{activeSubjects[0] !== "" ? `Related Articles (${activeSubjects.length})` : "Please select subjects"}</h2>
                     {subjects.map((subject: string, index: number) => (
                         activeSubjects.includes(subjects_code[index]) ? (
                             <Badge key={subject} variant="outline" className="cursor-pointer">
@@ -43,7 +43,7 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
                 <div className="w-[880px] h-[700px] col-span-2">
                     <div className="w-[880px] h-[700px] overflow-y-auto mb-2">
                         <ScrollArea>
-                            {activeSubjects.length === 0 ? (
+                            {currentArticles.length === 0 ? (
                                 <p>No articles found for the selected subjects.</p>
                             ) : (
                                 <div className="flex flex-col gap-4 items-center">
@@ -51,7 +51,7 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
                                         <Badge
                                             key={article.article_id}
                                             variant="outline"
-                                            className={`border p-4 rounded w-[880px] flex flex-col items-start hover:bg-primary/10 ${selectedArticle?.article_id === article.article_id ? 'bg-primary/10' : ''}`}
+                                            className={`border p-4 rounded w-[880px] flex flex-col items-start hover:bg-muted ${selectedArticle?.article_id === article.article_id ? 'bg-muted' : ''}`}
                                         >
                                             <Link
                                                 key={article.article_id}
@@ -81,33 +81,35 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
                     />
                 </div>
                 <div className="col-span-1 space-y-4">
-                    <Card className="h-[700px] bg-primary/10">
-                        <CardHeader>
-                            <CardTitle className="text-2xl">{selectedArticle?.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 overflow-x-hidden">
-                            <p className="text-md font-semibold">{selectedArticle?.formatted_author}</p>
-                            <p className="text-sm">{selectedArticle?.journal_name} at {selectedArticle?.journal_year}.{selectedArticle?.journal_month}. </p>
-                            <div className="my-4">
-                                <span className="text-md font-bold">Abstract</span>
-                            </div>
-                            <p className="text-md">{selectedArticle?.abstract}</p>
-                            <div className="my-4">
-                                <span className="text-md font-bold">keywords</span>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {selectedArticle?.jel_code_names?.split(',').map((keyword: string, index: number) => (
-                                    <Badge key={index} variant="outline" className="max-w-[400px] white-space-normal bg-primary-foreground">
-                                        <p>{keyword.trim()}</p>
-                                    </Badge>
-                                ))}
-                            </div>
-                            <div className="my-4">
-                                <span className="text-md font-bold">Journal URL</span>
-                            </div>
-                            <a className="text-sm underline" href={selectedArticle?.article_url} target="_blank" rel="noopener noreferrer">{selectedArticle?.article_url}</a>
-                        </CardContent>
-                    </Card>
+                    {activeSubjects[0] !== "" ? (
+                        <Card className="h-[700px] bg-muted">
+                            <CardHeader>
+                                <CardTitle className="text-2xl">{selectedArticle?.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4 overflow-x-hidden">
+                                <p className="text-md font-semibold">{selectedArticle?.formatted_author}</p>
+                                <p className="text-sm">{selectedArticle?.journal_name} at {selectedArticle?.journal_year}.{selectedArticle?.journal_month}. </p>
+                                <div className="my-4">
+                                    <span className="text-md font-bold">Abstract</span>
+                                </div>
+                                <p className="text-md">{selectedArticle?.abstract}</p>
+                                <div className="my-4">
+                                    <span className="text-md font-bold">keywords</span>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {selectedArticle?.jel_code_names?.split(',').map((keyword: string, index: number) => (
+                                        <Badge key={index} variant="outline" className="max-w-[400px] white-space-normal bg-white">
+                                            <p>{keyword.trim()}</p>
+                                        </Badge>
+                                    ))}
+                                </div>
+                                <div className="my-4">
+                                    <span className="text-md font-bold">Journal URL</span>
+                                </div>
+                                <a className="text-sm underline" href={selectedArticle?.article_url} target="_blank" rel="noopener noreferrer">{selectedArticle?.article_url}</a>
+                            </CardContent>
+                        </Card>
+                    ) : null}
                 </div>
             </div>
         </div>

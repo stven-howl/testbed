@@ -1,14 +1,17 @@
+import { redirect } from "react-router";
 import { getArticles, getSubjectRatio, getChildSubjects } from "~/components/queries";
 
 export const loader = async ({ request }: { request: Request }) => {
     try {
         const url = new URL(request.url);
-        const upperSubjectCode = url.searchParams.get('upperSubjectCode') || "D";
-        const upperSubjectName = url.searchParams.get('upperSubjectName') || "Macroeconomics";
+
+        const upperSubjectCode: string = url.searchParams.get('upperSubjectCode') || "D";
+        const upperSubjectName: string = url.searchParams.get('upperSubjectName') || "Macroeconomics";
 
         // URL에서 active subjects를 가져오거나 기본값 사용
-        const activeSubjectsParam = url.searchParams.get('activeSubjects') || `${upperSubjectCode}2, ${upperSubjectCode}4, ${upperSubjectCode}6`;
-        const activeSubjects = activeSubjectsParam.split(',');
+        const activeSubjectsParam = (url.searchParams.get('activeSubjects') === null) ? `${upperSubjectCode}2, ${upperSubjectCode}4` : url.searchParams.get('activeSubjects');
+
+        const activeSubjects = activeSubjectsParam!.split(',');
 
         const childSubjects = await getChildSubjects({ category_level: "sector2", category_value: upperSubjectCode });
         const childSubjectsCodes = childSubjects.map((subject: any) => subject.jel_code);

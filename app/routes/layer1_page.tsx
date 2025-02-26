@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { ScrollBar } from "~/components/ui/scroll-area";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import ArticlesSubjects from "~/components/common/articles_subjects";
-import { useState } from "react";
 import { Switch } from "~/components/ui/switch";
 
 export function meta({ }: Route.MetaArgs) {
@@ -310,10 +309,8 @@ const chartConfig = {
 
 
 export default function Home() {
-    const { upperSubjectName, upperSubjectCode, articles, activeSubjects, chartData, childSubjectsCodes, childSubjectsNames } = useLoaderData();
+    const { upperSubjectName, upperSubjectCode, articles, activeSubjects, chartData, childSubjectsCodes, childSubjectsNames }: { upperSubjectName: string, upperSubjectCode: string, articles: any[], activeSubjects: string[], chartData: any[], childSubjectsCodes: string[], childSubjectsNames: string[] } = useLoaderData();
     const navigate = useNavigate();
-    const [previousSubjects, setPreviousSubjects] = useState([]);
-    console.log(chartData);
     return (
         <div className="relative w-full h-full">
             <div className="flex flex-col gap-4 w-[1400px] mx-auto items-start">
@@ -374,11 +371,10 @@ export default function Home() {
                                     onCheckedChange={(checked) => {
                                         if (checked) {
                                             // 모든 subjects 선택
-                                            setPreviousSubjects(activeSubjects)
+                                            // setPreviousSubjects(activeSubjects)
                                             navigate(`?upperSubjectCode=${upperSubjectCode}&upperSubjectName=${upperSubjectName}&activeSubjects=${childSubjectsCodes.join(',')}`);
                                         } else {
-                                            // 이전 상태로 복귀
-                                            navigate(`?upperSubjectCode=${upperSubjectCode}&upperSubjectName=${upperSubjectName}&activeSubjects=${previousSubjects.join(',')}`);
+                                            navigate(`?upperSubjectCode=${upperSubjectCode}&upperSubjectName=${upperSubjectName}&activeSubjects=`);
                                         }
                                     }}
                                 />
@@ -393,18 +389,19 @@ export default function Home() {
                                     {childSubjectsNames.map((subjectName: string, index: number) => {
                                         const isActive = activeSubjects.includes(childSubjectsCodes[index]);
                                         const newSet = new Set(activeSubjects);
-                                        if (isActive && newSet.size !== 1) {
+                                        if (isActive) {
                                             newSet.delete(childSubjectsCodes[index]);
-                                        } else if (!isActive || newSet.size === 1) {
+                                        } else {
                                             newSet.add(childSubjectsCodes[index]);
                                         }
-                                        const newActiveSubjects = Array.from(newSet).join(',');
+                                        const newActiveSubjects = Array.from(newSet);
+                                        const newActiveSubjectsforParam = newActiveSubjects.filter((subject: string) => subject.length === 2 && subject.startsWith(upperSubjectCode)).join(',');
 
                                         return (
                                             <Link
                                                 key={subjectName}
-                                                to={`?activeSubjects=${newActiveSubjects}`}
-                                                className={`w-full relative h-9 p-2 border rounded-md ${isActive ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary hover:text-secondary-foreground '
+                                                to={`/layer1?upperSubjectCode=${upperSubjectCode}&upperSubjectName=${upperSubjectName}&activeSubjects=${newActiveSubjectsforParam}`}
+                                                className={`w-full relative h-9 p-2 border rounded-md ${isActive ? 'bg-primary/10' : 'bg-background hover:bg-secondary hover:text-secondary-foreground '
                                                     } items-center flex text-sm justify-between`}
                                             >
                                                 <div className="flex items-center">

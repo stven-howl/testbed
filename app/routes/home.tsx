@@ -7,7 +7,6 @@ import { ScrollBar } from "~/components/ui/scroll-area";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import ArticlesSubjects from "~/components/common/articles_subjects";
 import { Switch } from "~/components/ui/switch";
-import { useState } from "react";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -310,7 +309,6 @@ const subjects_code = [
 
 export default function Home() {
   const { articles, activeSubjects } = useLoaderData();
-  const [previousSubjects, setPreviousSubjects] = useState([]);
   const navigate = useNavigate();
   return (
     <div className="relative w-full h-full">
@@ -372,11 +370,11 @@ export default function Home() {
                   onCheckedChange={(checked) => {
                     if (checked) {
                       // 모든 subjects 선택
-                      setPreviousSubjects(activeSubjects)
+                      // setPreviousSubjects(activeSubjects)
                       navigate(`?activeSubjects=${subjects_code.join(',')}`);
                     } else {
                       // 이전 상태로 복귀
-                      navigate(`?activeSubjects=${previousSubjects.join(',')}`);
+                      navigate(`?activeSubjects=`);
                     }
                   }}
                 />
@@ -390,19 +388,20 @@ export default function Home() {
                 <div className="flex flex-col gap-2 w-[400px]">
                   {subjects.map((subject: string, index: number) => {
                     const isActive = activeSubjects.includes(subjects_code[index]);
-                    const newSet = new Set(activeSubjects);
-                    if (isActive && newSet.size !== 1) {
+                    const newSet = new Set(activeSubjects) as Set<string>;
+                    if (isActive) {
                       newSet.delete(subjects_code[index]);
-                    } else if (!isActive || newSet.size === 1) {
+                    } else {
                       newSet.add(subjects_code[index]);
                     }
-                    const newActiveSubjects = Array.from(newSet).join(',');
+                    const newActiveSubjects = Array.from(newSet);
+                    const newActiveSubjectsforParam = newActiveSubjects.filter((subject: string) => subject.length === 1).join(',');
 
                     return (
                       <Link
                         key={subject}
-                        to={`?activeSubjects=${newActiveSubjects}`}
-                        className={`w-full relative h-9 p-2 border rounded-md ${isActive ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary hover:text-secondary-foreground '
+                        to={`?activeSubjects=${newActiveSubjectsforParam}`}
+                        className={`w-full relative h-9 p-2 border rounded-md ${isActive ? 'bg-primary/10' : 'bg-background hover:bg-secondary hover:text-secondary-foreground '
                           } items-center flex text-sm justify-between`}
                       >
                         <div className="flex items-center">
@@ -416,7 +415,6 @@ export default function Home() {
                           to={`/layer1?upperSubjectCode=${subjects_code[index]}&upperSubjectName=${subject}`}
                           className="hover:bg-secondary-foreground/10 p-1 rounded"
                           onClick={(e) => e.stopPropagation()}
-                          state={{ upperSubjectName: subject }}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
