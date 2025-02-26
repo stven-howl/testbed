@@ -10,7 +10,7 @@ export const loader = async ({ request }: { request: Request }) => {
         const activeSubjects = activeSubjectsParam.split(',');
 
         // Promise.all을 사용하여 병렬로 데이터 fetch
-        const articles = await getArticles({ subjects: activeSubjects })
+        const articles = await getArticles({ sector: "sector2", subjects: activeSubjects })
 
         return {
             articles,

@@ -380,6 +380,22 @@ export type Database = {
       }
     }
     Views: {
+      aer_crawling_view: {
+        Row: {
+          abstract: string | null
+          article_url: string | null
+          author: string | null
+          doi: string | null
+          jelcode: string | null
+          journal_month: number | null
+          journal_name: string | null
+          journal_pages: string | null
+          journal_volume: string | null
+          journal_year: number | null
+          title: string | null
+        }
+        Relationships: []
+      }
       disticnt_sector2: {
         Row: {
           jel_code_sector2: string | null
@@ -409,6 +425,25 @@ export type Database = {
           abstract: string
           journal_name: string
           jelcode: string
+          article_url: string
+        }[]
+      }
+      article_year_list_v2: {
+        Args: {
+          category_level: string
+          category_value: string[]
+        }
+        Returns: {
+          article_id: number
+          journal_year: number
+          journal_month: number
+          title: string
+          author: string
+          formatted_author: string
+          abstract: string
+          journal_name: string
+          jelcode: string
+          jel_code_names: string
           article_url: string
         }[]
       }

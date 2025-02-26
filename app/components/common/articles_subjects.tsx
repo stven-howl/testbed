@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router";
 import { Badge } from "~/components/ui/badge";
 import { DotIcon } from "lucide-react";
-import { ArticlesPagination } from "~/components/articles_pagination";
+import { ArticlesPagination } from "~/components/common/articles_pagination";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
@@ -26,9 +26,9 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
     let selectedArticle = currentArticles.find(article => Number(article.article_id) === article_id);
 
     return (
-        <div className="w-[1400px] grid grid-cols-3 gap-4 mx-auto">
-            <div className="col-span-2">
-                <div className="overflow-y-auto p-4 mt-12 space-y-4 w-[900px] mx-auto">
+        <div className="w-[1370px] gap-4 mx-auto">
+            <div>
+                <div className="overflow-y-auto p-4 mt-12 space-y-4 w-[1400px] mx-auto">
                     <h2 className="text-2xl font-bold">Related Articles {activeSubjects.length > 0 ? `(${activeSubjects.length})` : ""}</h2>
                     {subjects.map((subject: string, index: number) => (
                         activeSubjects.includes(subjects_code[index]) ? (
@@ -37,8 +37,12 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
                             </Badge>
                         ) : null
                     ))}
-                    <div className="flex flex-col gap-4">
-                        <ScrollArea className="w-[880px] h-[650px]">
+                </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+                <div className="w-[880px] h-[700px] col-span-2">
+                    <div className="w-[880px] h-[700px] overflow-y-auto mb-2">
+                        <ScrollArea>
                             {activeSubjects.length === 0 ? (
                                 <p>No articles found for the selected subjects.</p>
                             ) : (
@@ -47,15 +51,16 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
                                         <Badge
                                             key={article.article_id}
                                             variant="outline"
-                                            className={`border p-4 rounded w-[880px] flex flex-col items-start hover:bg-primary/10 cursor-pointer ${selectedArticle?.article_id === article.article_id ? 'bg-primary/10' : ''}`}
+                                            className={`border p-4 rounded w-[880px] flex flex-col items-start hover:bg-primary/10 ${selectedArticle?.article_id === article.article_id ? 'bg-primary/10' : ''}`}
                                         >
                                             <Link
                                                 key={article.article_id}
+                                                preventScrollReset
                                                 to={`?activeSubjects=${activeSubjects}&page=${currentPage}&article_id=${article.article_id}`}
                                             >
-                                                <h2 className="text-lg font-semibold text-left hover:underline">{article.title}</h2>
+                                                <h2 className="text-lg font-semibold text-left hover:underline cursor-pointer">{article.title}</h2>
                                                 <div className="flex items-start gap-2">
-                                                    <p className="text-gray-600 text-left">{article.author}</p>
+                                                    <p className="text-gray-600 text-left">{article.formatted_author}</p>
                                                     <DotIcon className="w-4 h-4 text-gray-600" />
                                                     <p className="text-gray-600 text-left">{article.journal_name}</p>
                                                     <DotIcon className="w-4 h-4 text-gray-600" />
@@ -68,28 +73,43 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
                             )}
                             <ScrollBar orientation="vertical" forceMount />
                         </ScrollArea>
-                        <ArticlesPagination
-                            totalItems={initialArticles.length}
-                            page={currentPage}
-                            activeSubjects={activeSubjects}
-                        />
                     </div>
-
+                    <ArticlesPagination
+                        totalItems={initialArticles.length}
+                        page={currentPage}
+                        activeSubjects={activeSubjects}
+                    />
+                </div>
+                <div className="col-span-1 space-y-4">
+                    <Card className="h-[700px] bg-primary/10">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">{selectedArticle?.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 overflow-x-hidden">
+                            <p className="text-md font-semibold">{selectedArticle?.formatted_author}</p>
+                            <p className="text-sm">{selectedArticle?.journal_name} at {selectedArticle?.journal_year}.{selectedArticle?.journal_month}. </p>
+                            <div className="my-4">
+                                <span className="text-md font-bold">Abstract</span>
+                            </div>
+                            <p className="text-md">{selectedArticle?.abstract}</p>
+                            <div className="my-4">
+                                <span className="text-md font-bold">keywords</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {selectedArticle?.jel_code_names?.split(',').map((keyword: string, index: number) => (
+                                    <Badge key={index} variant="outline" className="max-w-[400px] white-space-normal">
+                                        <p>{keyword.trim()}</p>
+                                    </Badge>
+                                ))}
+                            </div>
+                            <div className="my-4">
+                                <span className="text-md font-bold">Journal URL</span>
+                            </div>
+                            <a className="text-sm underline" href={selectedArticle?.article_url} target="_blank" rel="noopener noreferrer">{selectedArticle?.article_url}</a>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
-            <div className="col-span-1 mt-38 space-y-4">
-                <Card className="h-[650px]">
-                    <CardHeader>
-                        <CardTitle className="text-2xl">{selectedArticle?.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="text-md">author name</p>
-                        <p className="text-md">{selectedArticle?.abstract}</p>
-                        <a className="text-sm underline" href={selectedArticle?.article_url} target="_blank" rel="noopener noreferrer">{selectedArticle?.article_url}</a>
-                    </CardContent>
-                </Card>
-            </div>
         </div>
-
     )
 }

@@ -12,7 +12,7 @@ export function ArticlesPagination({
     const totalPages = Math.ceil(totalItems / 20);
     return (
         <div>
-            <Pagination>
+            <Pagination className="mb-5">
                 <PaginationContent>
                     {page === 1 ? null : (
                         <>
@@ -20,12 +20,14 @@ export function ArticlesPagination({
                                 <PaginationPrevious
                                     to={`?activeSubjects=${activeSubjects}&page=${page - 1}`}
                                     size="default"
+                                    preventScrollReset
                                 />
                             </PaginationItem>
                             <PaginationItem>
                                 <PaginationLink
                                     to={`?activeSubjects=${activeSubjects}&page=${page - 1}`}
                                     size="default"
+                                    preventScrollReset
                                 >
                                     {page - 1}
                                 </PaginationLink>
@@ -37,6 +39,7 @@ export function ArticlesPagination({
                             to={`?activeSubjects=${activeSubjects}&page=${page}`}
                             isActive
                             size="default"
+                            preventScrollReset
                         >
                             {page}
                         </PaginationLink>
@@ -47,6 +50,7 @@ export function ArticlesPagination({
                                 <PaginationLink
                                     to={`?activeSubjects=${activeSubjects}&page=${page + 1}`}
                                     size="default"
+                                    preventScrollReset
                                 >
                                     {page + 1}
                                 </PaginationLink>
@@ -60,6 +64,7 @@ export function ArticlesPagination({
                                 <PaginationNext
                                     to={`?activeSubjects=${activeSubjects}&page=${page + 1}`}
                                     size="default"
+                                    preventScrollReset
                                 />
                             </PaginationItem>
                         </>

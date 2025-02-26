@@ -1,13 +1,13 @@
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import type { Route } from "./+types/home";
 import { YAxis, Line, XAxis, LineChart, CartesianGrid } from "recharts";
 import { ChartContainer, ChartTooltip, type ChartConfig } from "~/components/ui/chart";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { ScrollBar } from "~/components/ui/scroll-area";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import ArticlesSubjects from "~/components/articles_subjects";
-import { Container } from "lucide-react";
-import ArticlesOverlay from "~/components/articles_overlay";
+import ArticlesSubjects from "~/components/common/articles_subjects";
+import { Switch } from "~/components/ui/switch";
+import { useState } from "react";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -15,7 +15,7 @@ export function meta({ }: Route.MetaArgs) {
     { name: "description", content: "Welcome to React Router!" },
   ];
 }
-export { loader } from "~/components/trend_chart_loader";
+export { loader } from "~/components/layer0/layer0_loader";
 
 const chartConfig = {
   x: {
@@ -308,9 +308,10 @@ const subjects_code = [
 ]
 
 
-
 export default function Home() {
   const { articles, activeSubjects } = useLoaderData();
+  const [previousSubjects, setPreviousSubjects] = useState([]);
+  const navigate = useNavigate();
   return (
     <div className="relative w-full h-full">
       <div className="flex flex-col gap-4 w-[1400px] mx-auto items-start">
@@ -362,8 +363,27 @@ export default function Home() {
             </CardContent>
           </Card>
           <Card className="h-[600px]">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Subjects</CardTitle>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="select-all"
+                  checked={subjects_code.length === activeSubjects.length}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      // 모든 subjects 선택
+                      setPreviousSubjects(activeSubjects)
+                      navigate(`?activeSubjects=${subjects_code.join(',')}`);
+                    } else {
+                      // 이전 상태로 복귀
+                      navigate(`?activeSubjects=${previousSubjects.join(',')}`);
+                    }
+                  }}
+                />
+                <label htmlFor="select-all" className="text-sm">
+                  Select All
+                </label>
+              </div>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <ScrollArea className="max-h-[500px] w-[400px]">
@@ -383,13 +403,35 @@ export default function Home() {
                         key={subject}
                         to={`?activeSubjects=${newActiveSubjects}`}
                         className={`w-full relative h-9 p-2 border rounded-md ${isActive ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary hover:text-secondary-foreground '
-                          } items-center flex text-sm`}
+                          } items-center flex text-sm justify-between`}
                       >
-                        <div
-                          className="w-4 h-9 rounded-md absolute left-0"
-                          style={{ backgroundColor: `hsl(${index * 360 / subjects.length}, 70%, 50%)` }}
-                        />
-                        <span className="pl-6">{subject}</span>
+                        <div className="flex items-center">
+                          <div
+                            className="w-4 h-9 rounded-md absolute left-0"
+                            style={{ backgroundColor: `hsl(${index * 360 / subjects.length}, 70%, 50%)` }}
+                          />
+                          <span className="pl-6">{subject}</span>
+                        </div>
+                        <Link
+                          to={`/layer1?upperSubjectCode=${subjects_code[index]}&upperSubjectName=${subject}`}
+                          className="hover:bg-secondary-foreground/10 p-1 rounded"
+                          onClick={(e) => e.stopPropagation()}
+                          state={{ upperSubjectName: subject }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="m9 18 6-6-6-6" />
+                          </svg>
+                        </Link>
                       </Link>
                     );
                   })}

@@ -1,12 +1,14 @@
 import client from "~/supa_clients"
 
 export const getArticles = async ({
+    sector,
     subjects
 }: {
+    sector: string,
     subjects: string[]
 }) => {
     let query = client
-        .rpc('article_year_list', {category_level: "sector2", category_value: subjects})
+        .rpc('article_year_list_v2', {category_level: sector, category_value: subjects})
         .select("*")
         .order("journal_year", { ascending: false });
 
