@@ -503,6 +503,16 @@ export type Database = {
           ratio: number
         }[]
       }
+      jel_groupby: {
+        Args: {
+          category_level: string
+          category_value: string
+        }
+        Returns: {
+          jel_code: string
+          jel_code_name: string
+        }[]
+      }
       original_count_articles_by_jel: {
         Args: {
           category_level: string

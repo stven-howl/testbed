@@ -97,7 +97,7 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {selectedArticle?.jel_code_names?.split(',').map((keyword: string, index: number) => (
-                                    <Badge key={index} variant="outline" className="max-w-[400px] white-space-normal">
+                                    <Badge key={index} variant="outline" className="max-w-[400px] white-space-normal bg-primary-foreground">
                                         <p>{keyword.trim()}</p>
                                     </Badge>
                                 ))}

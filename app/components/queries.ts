@@ -69,3 +69,20 @@ export const getSector2Name = async({
     }
     return data?.[0]?.jel_code_sector2_name;
 }
+
+export const getChildSubjects = async({
+    category_level,
+    category_value,
+}: {category_level: string, category_value: string}) => {
+    const {data, error} = await client
+    .rpc('jel_groupby', {category_level, category_value})
+    .select("*")
+    .order("jel_code", { ascending: true });
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    return data;
+    
+    
+}
