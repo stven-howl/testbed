@@ -10,8 +10,8 @@ import { Switch } from "~/components/ui/switch";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Academia" },
+    { name: "description", content: "Academia" },
   ];
 }
 export { loader } from "~/components/layer0/layer0_loader";

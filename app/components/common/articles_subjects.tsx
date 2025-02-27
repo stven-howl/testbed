@@ -41,7 +41,7 @@ export default function ArticlesSubjects({ activeSubjects, subjects, subjects_co
             <div>
                 <div className="overflow-y-auto p-4 mt-12 space-y-4 w-[1400px] mx-auto">
                     <div className="flex flex-row items-center justify-start gap-4">
-                        <h2 className="text-2xl font-bold">{activeSubjects[0] !== "" ? `Related Articles (${activeSubjects.length})` : "Please select subjects"}</h2>
+                        <h2 className="text-2xl font-bold">{activeSubjects[0] !== "" ? `Related Articles (${filteredArticles.length})` : "Please select subjects"}</h2>
                         <Input type="text" placeholder="Search articles by title or author" className="w-[300px]" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
                     </div>
                     {subjects.map((subject: string, index: number) => (
